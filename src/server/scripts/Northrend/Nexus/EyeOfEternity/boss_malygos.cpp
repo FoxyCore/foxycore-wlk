@@ -710,7 +710,7 @@ public:
                         me->SendMeleeAttackStop(me->GetVictim());
                         me->GetMotionMaster()->MoveTakeoff(MI_POINT_PH_3_FIGHT_POSITION, CenterPos.GetPositionX(), CenterPos.GetPositionY(), CenterPos.GetPositionZ() - 5.0f, me->GetSpeed(MOVE_RUN));
 
-                        me->DeleteThreatList(); // players on vehicle are unattackable -> leads to EnterEvadeMode() because target is not acceptable!
+                        me->GetThreatMgr().ClearAllThreat(); // players on vehicle are unattackable -> leads to EnterEvadeMode() because target is not acceptable!
 
                         // mount players:
                         Map::PlayerList const& PlayerList = me->GetMap()->GetPlayers();
@@ -814,12 +814,13 @@ public:
 
         void MoveInLineOfSight(Unit*  /*who*/) override {}
 
-        void EnterEvadeMode() override
+        void EnterEvadeMode(EvadeReason why) override
         {
             me->SetDisableGravity(true);
             me->GetMap()->SetZoneOverrideLight(AREA_EYE_OF_ETERNITY, LIGHT_GET_DEFAULT_FOR_MAP, 1s);
+
             me->RemoveUnitFlag(UNIT_FLAG_DISABLE_MOVE);
-            ScriptedAI::EnterEvadeMode();
+            ScriptedAI::EnterEvadeMode(why);
         }
 
         void HandleIntroSpeech(const uint32 diff)

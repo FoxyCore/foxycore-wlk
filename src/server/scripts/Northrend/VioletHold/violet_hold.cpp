@@ -376,7 +376,7 @@ struct violet_hold_trashAI : public npc_escortAI
         me->CastSpell((Unit*)nullptr, SPELL_DESTROY_DOOR_SEAL, true);
     }
 
-    void EnterEvadeMode() override
+    void EnterEvadeMode(EvadeReason /*why*/) override
     {
         if (!HasEscortState(STATE_ESCORT_ESCORTING))
         {
@@ -384,7 +384,7 @@ struct violet_hold_trashAI : public npc_escortAI
             me->SetHomePosition(1845.577759f + rand_norm() * 5 - 2.5f, 800.681152f + rand_norm() * 5 - 2.5f, 44.104248f, M_PI);
         }
 
-        me->DeleteThreatList();
+        me->GetThreatMgr().ClearAllThreat();
         me->CombatStop(true);
         if (HasEscortState(STATE_ESCORT_ESCORTING))
         {

@@ -499,7 +499,7 @@ public:
     bool Execute(uint64 /*time*/, uint32 /*diff*/) override
     {
         _owner->SetReactState(REACT_AGGRESSIVE);
-        if (!_owner->getThreatMgr().isThreatListEmpty())
+        if (!_owner->GetThreatMgr().isThreatListEmpty())
             if (Unit* target = _owner->SelectVictim())
                 _owner->AI()->AttackStart(target);
         if (!_owner->GetVictim())
@@ -673,7 +673,7 @@ public:
         {
             if (!instance->CheckRequiredBosses(DATA_THE_LICH_KING, target->ToPlayer()) || !me->IsVisible())
             {
-                EnterEvadeMode();
+                EnterEvadeMode(EVADE_REASON_OTHER);
                 instance->DoCastSpellOnPlayers(LIGHT_S_HAMMER_TELEPORT);
                 return;
             }
@@ -1252,13 +1252,13 @@ public:
             }
         }
 
-        void EnterEvadeMode() override
+        void EnterEvadeMode(EvadeReason why) override
         {
             EntryCheckPredicate pred(NPC_STRANGULATE_VEHICLE);
             summons.DoAction(ACTION_TELEPORT_BACK, pred);
             instance->SetBossState(DATA_THE_LICH_KING, FAIL);
             me->CastSpell((Unit*)nullptr, SPELL_KILL_FROSTMOURNE_PLAYERS, true);
-            BossAI::EnterEvadeMode();
+            BossAI::EnterEvadeMode(why);
             me->SetReactState(REACT_AGGRESSIVE);
 
             if (Creature* tirion = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_HIGHLORD_TIRION_FORDRING)))
@@ -1635,7 +1635,7 @@ public:
             DoMeleeAttackIfReady();
         }
 
-        void EnterEvadeMode() override
+        void EnterEvadeMode(EvadeReason why) override
         {
             if (!me->IsAlive())
                 return;
@@ -1643,11 +1643,11 @@ public:
             if (Creature* theLichKing = ObjectAccessor::GetCreature(*me, _instance->GetGuidData(DATA_THE_LICH_KING)))
                 if (theLichKing->IsInEvadeMode())
                 {
-                    ScriptedAI::EnterEvadeMode();
+                    ScriptedAI::EnterEvadeMode(why);
                     return;
                 }
 
-            me->DeleteThreatList();
+            me->GetThreatMgr().ClearAllThreat();
             me->CombatStop(false);
         }
 
@@ -2378,7 +2378,7 @@ public:
                     {
                         me->SetControlled(false, UNIT_STATE_ROOT);
 
-                        if (!me->getThreatMgr().isThreatListEmpty())
+                        if (!me->GetThreatMgr().isThreatListEmpty())
                             if (Unit* target = me->SelectVictim())
                                 AttackStart(target);
                         if (!me->GetVictim())
@@ -3365,12 +3365,12 @@ public:
             return target->GetEntry() != NPC_THE_LICH_KING;
         }
 
-        void EnterEvadeMode() override
+        void EnterEvadeMode(EvadeReason /*why*/) override
         {
             if (!me->IsAlive())
                 return;
 
-            me->DeleteThreatList();
+            me->GetThreatMgr().ClearAllThreat();
             me->CombatStop(false);
         }
     };

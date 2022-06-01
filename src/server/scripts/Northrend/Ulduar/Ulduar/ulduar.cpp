@@ -125,7 +125,8 @@ public:
         void MoveInLineOfSight(Unit* who) override
         {
             if (!activated && who->GetTypeId() == TYPEID_PLAYER)
-                if (me->GetExactDist2d(who) <= 25.0f && me->GetMap()->isInLineOfSight(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ() + 5.0f, who->GetPositionX(), who->GetPositionY(), who->GetPositionZ() + 5.0f, 2, LINEOFSIGHT_ALL_CHECKS))
+                if (me->GetExactDist2d(who) <= 25.0f && me->GetMap()->isInLineOfSight(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ() + 5.0f,
+                    who->GetPositionX(), who->GetPositionY(), who->GetPositionZ() + 5.0f, 2, LINEOFSIGHT_ALL_CHECKS, VMAP::ModelIgnoreFlags::Nothing))
                 {
                     activated = true;
                     me->RemoveAura(64615);
@@ -296,10 +297,10 @@ public:
                 ScriptedAI::AttackStart(who);
         }
 
-        void EnterEvadeMode() override
+        void EnterEvadeMode(EvadeReason why) override
         {
             if (me->GetFaction() == FACTION_MONSTER_2)
-                ScriptedAI::EnterEvadeMode();
+                ScriptedAI::EnterEvadeMode(why);
         }
 
         void OnCharmed(bool  /*apply*/) override {}
@@ -437,10 +438,13 @@ struct npc_salvaged_siege_engine : public VehicleAI
             {
                 if (Unit* turret = vehicle->GetPassenger(7))
                 {
-                    if (!turret->GetVehicleKit()->IsVehicleInUse())
+                    if (Vehicle* turretVehicle = me->GetVehicleKit())
                     {
-                        turret->HandleSpellClick(clicker);
-                        return false;
+                        if (!turretVehicle->IsVehicleInUse())
+                        {
+                            turret->HandleSpellClick(clicker);
+                            return false;
+                        }
                     }
                 }
             }

@@ -308,11 +308,11 @@ public:
             events.Reset();
         }
 
-        void EnterEvadeMode() override
+        void EnterEvadeMode(EvadeReason why) override
         {
             if (me->GetReactState() == REACT_PASSIVE)
                 return;
-            ScriptedAI::EnterEvadeMode();
+            ScriptedAI::EnterEvadeMode(why);
         }
 
         void AttackStart(Unit* who) override
@@ -329,7 +329,7 @@ public:
                 me->SetTarget();
                 me->SetReactState(REACT_PASSIVE);
                 me->RemoveAllAuras();
-                me->DeleteThreatList();
+                me->GetThreatMgr().ClearAllThreat();
                 me->SetRegeneratingHealth(false);
                 me->SetUnitFlag(UNIT_FLAG_NON_ATTACKABLE);
                 me->HandleEmoteCommand(EMOTE_ONESHOT_DROWN);

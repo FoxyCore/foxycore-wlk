@@ -1548,6 +1548,10 @@ void Player::UpdateVisibilityForPlayer(bool mapChange)
 
 void Player::UpdateObjectVisibility(bool forced, bool fromUpdate)
 {
+    // Prevent updating visibility if player is not in world (example: LoadFromDB sets drunkstate which updates invisibility while player is not in map)
+    if (!IsInWorld())
+        return;
+
     if (!forced)
         AddToNotify(NOTIFY_VISIBILITY_CHANGED);
     else if (!isBeingLoaded())
@@ -1691,8 +1695,7 @@ void Player::UpdateTriggerVisibility()
             // units (values dependent on GM state)
             if (!creature || (!creature->IsTrigger() &&
                               !creature->HasAuraType(SPELL_AURA_TRANSFORM) &&
-                              !creature->HasFlag(UNIT_FIELD_FLAGS,
-                                                 UNIT_FLAG_NOT_SELECTABLE)))
+                              !creature->HasUnitFlag(UNIT_FLAG_NOT_SELECTABLE)))
                 continue;
 
             creature->SetFieldNotifyFlag(UF_FLAG_PUBLIC);

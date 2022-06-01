@@ -133,7 +133,7 @@ public:
             {
                 t->RemoveAura(SPELL_CHANGE_VEHICLE);
                 me->RemoveAllAuras();
-                me->DeleteThreatList();
+                me->GetThreatMgr().ClearAllThreat();
                 me->CombatStop(true);
                 me->SetHealth(me->GetMaxHealth());
                 if( pInstance )
@@ -402,7 +402,7 @@ public:
             }
         }
 
-        void EnterEvadeMode() override
+        void EnterEvadeMode(EvadeReason /*why*/) override
         {
             events.Reset();
             summons.DespawnAll();
@@ -667,7 +667,7 @@ struct boss_jormungarAI : public ScriptedAI
         }
     }
 
-    void EnterEvadeMode() override
+    void EnterEvadeMode(EvadeReason /*why*/) override
     {
         events.Reset();
         me->SetUnitFlag(UNIT_FLAG_NON_ATTACKABLE);
@@ -1000,7 +1000,7 @@ public:
                 DoMeleeAttackIfReady();
         }
 
-        void EnterEvadeMode() override
+        void EnterEvadeMode(EvadeReason /*why*/) override
         {
             events.Reset();
             me->SetUnitFlag(UNIT_FLAG_NON_ATTACKABLE);
